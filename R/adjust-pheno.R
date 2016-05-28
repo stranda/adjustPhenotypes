@@ -6,6 +6,35 @@
 
 #require(dplyr)
 
+#' @name colcorrect
+#' @title Correct phenotypes by the mean of col plants grown in each growth chamber in each Experiment
+#' @param dat is a dataframe in long format
+#' @param pheno is a character vector of phenotypes
+#' @param classifier is a character vector of classifying columns in the dataframe (exp, facility, etc)
+#' @param lineid the name of the column that contains Accessions (e.g. SALK lines or CS numbers)
+#' @export
+colcorrect <- function(dat, pheno, classifier, lineid="line") {
+
+        dat <- dat[dat$variable %in% pheno,]
+        dat <- dat[!is.na(dat$value),] #don't mess with NAs
+        
+        filter.cond <- paste0("grepl('60000|70000',",lineid,")")
+        select.cond <- paste0(c(classifier,"variable","value"))
+        group.cond <-  paste0(c(classifier,"variable"))
+ ### mean all phyts by classifiers
+        phytmn <- filter_(dat,filter.cond)%>%
+            select_(.dots=select.cond)%>%
+                group_by_(.dots=group.cond) %>% summarise_each(funs(mean(.,na.rm=F)))
+        names(phytmn)[names(phytmn)=="value"] <- "mean"
+        if ("plantID" %in% names(phytmn)) {phytmn <- phytmn[,-grep("plantID",names(phytmn))]}
+
+### adj dat by phytometer means
+        select.cond <- paste0(c(classifier,lineid,"variable","value"))
+        adjdat <- left_join(dat,phytmn)
+        adjdat$value <- adjdat$value-adjdat$mean
+        adjdat <- adjdat %>% select_(.dots=select.cond)
+        adjdat
+    }
 #' @name phytcorrect
 #' @title Correct phenotypes by the mean of the phytometers in each growth chamber in each Experiment
 #' @param dat is a dataframe in long format
