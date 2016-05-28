@@ -1,0 +1,9 @@
+Package: adjustPhenotypes
+Title: Transforms UNPAK phenotypes 
+Version: 0.0.0.9000
+Authors@R: person("Allan", "Strand", email = "first.last@example.com", role = c("aut", "cre"))
+Description: takes unpak data and adjusts phenotypes based on phytometers, all plant means, or just columbia
+Depends: R (>= 3.4.0)
+License: What license is it under?
+Encoding: UTF-8
+LazyData: true
