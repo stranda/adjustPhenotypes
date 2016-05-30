@@ -18,7 +18,7 @@ colcorrect <- function(dat, pheno, classifier, lineid="line") {
         dat <- dat[dat$variable %in% pheno,]
         dat <- dat[!is.na(dat$value),] #don't mess with NAs
         
-        filter.cond <- paste0("grepl('60000|70000',",lineid,")")
+        filter.cond <- paste0("grepl('60000|70000|col|COL|columbia|Columbia',",lineid,")")
         select.cond <- paste0(c(classifier,"variable","value"))
         group.cond <-  paste0(c(classifier,"variable"))
  ### mean all phyts by classifiers
