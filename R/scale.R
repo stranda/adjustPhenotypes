@@ -11,13 +11,21 @@
 #' @export
 #'
 
-scalePhenos = function(phenolong)
-{
-    ExpFacStats = phenolong%>%group_by(experiment,facility,variable)%>%
-        summarise(std=sd(value),mean=mean(value)) %>% 
-            arrange(variable,experiment,facility)
-    phenolong = merge(phenolong,ExpFacStats)
-    phenolong$value=phenolong$value/phenolong$std
-    phenolong%>%select(-std,-mean)
-}
+scalePhenos <- function(dat, pheno, classifier, lineid="accession") {
 
+    dat <- dat[dat$variable %in% pheno,]
+    dat <- dat[!is.na(dat$value),] #don't mess with NAs
+
+    filter.cond <- paste0("grepl('60000|70000|col|COL|columbia|Columbia',",lineid,")")
+    select.cond <- paste0(c(classifier,"variable","value"))
+    group.cond <-  paste0(c(classifier,"variable"))
+
+    #get summary stats by classifiers+variable
+    ExpFacStats = dat%>%group_by_(.dots=group.cond)%>%
+        summarise(std=sd(value),mean=mean(value))
+
+    dat <- merge(dat,ExpFacStats)
+    dat$value=dat$value/dat$std
+    dat%>%select(-std,-mean)
+    
+}
