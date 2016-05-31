@@ -60,7 +60,9 @@ phytcorrect <- function(dat, pheno, classifier, lineid="line") {
 ### adj dat by phytometer means
         select.cond <- paste0(c(classifier,lineid,"variable","value"))
         adjdat <- left_join(dat,phytmn)
-        adjdat$value <- adjdat$value-adjdat$mean
+        adjdat$value <- ifelse(is.na(adjdat$mean),
+                               adjdat$value,
+                               adjdat$value-adjdat$mean)
         adjdat <- adjdat %>% select_(.dots=select.cond)
         adjdat
     }
@@ -93,7 +95,9 @@ allcorrect <- function(dat, pheno, classifier, lineid) {
 ### adj dat by phytometer means
         select.cond <- paste0(c(classifier,lineid,"variable","value"))
         adjdat <- left_join(dat,phytmn)
-        adjdat$value <- adjdat$value-adjdat$mean
+        adjdat$value <- ifelse(is.na(adjdat$mean),
+                               adjdat$value,
+                               adjdat$value-adjdat$mean)
         adjdat <- adjdat %>% select_(.dots=select.cond)
         adjdat
         
