@@ -53,10 +53,10 @@ phytcorrect <- function(dat, pheno, classifier, lineid="line") {
  ### mean all phyts by classifiers
         phytmn <- filter_(dat,filter.cond)%>%
             select_(.dots=select.cond)%>%
-                group_by_(.dots=group.cond) %>% summarise_each(funs(mean(.,na.rm=F)))
+                group_by_(.dots=group.cond) %>% summarise_each(funs(mean(.,na.rm=T)))
         names(phytmn)[names(phytmn)=="value"] <- "mean"
         if ("plantID" %in% names(phytmn)) {phytmn <- phytmn[,-grep("plantID",names(phytmn))]}
-
+       
 ### adj dat by phytometer means
         select.cond <- paste0(c(classifier,lineid,"variable","value"))
         adjdat <- left_join(dat,phytmn)
