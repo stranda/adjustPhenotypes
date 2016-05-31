@@ -11,9 +11,8 @@
 #' @export
 #'
 
-scalePhenos <- function(dat, pheno, classifier, lineid="accession") {
+scalePhenos <- function(dat, classifier, lineid="accession") {
 
-    dat <- dat[dat$variable %in% pheno,]
     dat <- dat[!is.na(dat$value),] #don't mess with NAs
 
     filter.cond <- paste0("grepl('60000|70000|col|COL|columbia|Columbia',",lineid,")")
