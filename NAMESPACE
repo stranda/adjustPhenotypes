@@ -3,3 +3,4 @@
 export(allcorrect)
 export(colcorrect)
 export(phytcorrect)
+export(scalePhenos)
