@@ -18,7 +18,7 @@ colcorrect <- function(dat, pheno, classifier, lineid="line") {
         dat <- dat[dat$variable %in% pheno,]
         dat <- dat[!is.na(dat$value),] #don't mess with NAs
         
-        filter.cond <- paste0("grepl('60000|70000|col|COL|columbia|Columbia',",lineid,")")
+        filter.cond <- paste0("grepl('60000|70000|Columbia',",lineid,")")
         select.cond <- paste0(c(classifier,"variable","value"))
         group.cond <-  paste0(c(classifier,"variable"))
  ### mean all phyts by classifiers
@@ -46,12 +46,14 @@ phytcorrect <- function(dat, pheno, classifier, lineid="line") {
 
         dat <- dat[dat$variable %in% pheno,]
         dat <- dat[!is.na(dat$value),] #don't mess with NAs
-        
-        filter.cond <- paste0("grepl('CS',",lineid,")")
+        dat.old <- dat
+    
+    filter.cond <- paste0("grepl('CS',",lineid,")")
+    filter.cond2 <- paste0("!grepl('60000|70000|Columbia',",lineid,")")
         select.cond <- paste0(c(classifier,"variable","value"))
         group.cond <-  paste0(c(classifier,"variable"))
  ### mean all phyts by classifiers
-        phytmn <- filter_(dat,filter.cond)%>%
+        phytmn <- filter_(dat,filter.cond)%>% filter_(.dots=filter.cond2)%>%
             select_(.dots=select.cond)%>%
                 group_by_(.dots=group.cond) %>% summarise_each(funs(mean(.,na.rm=T)))
         names(phytmn)[names(phytmn)=="value"] <- "mean"
@@ -63,7 +65,7 @@ phytcorrect <- function(dat, pheno, classifier, lineid="line") {
         adjdat$value <- ifelse(is.na(adjdat$mean),
                                adjdat$value,
                                adjdat$value-adjdat$mean)
-        adjdat <- adjdat %>% select_(.dots=select.cond)
+        adjdat <- adjdat %>% select_(.dots=names(dat.old))
         adjdat
     }
 
