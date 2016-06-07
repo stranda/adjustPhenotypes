@@ -4,7 +4,7 @@
 \alias{allcorrect}
 \title{description Correct phenotypes by the mean of all plants in each growth chamber in each Experiment}
 \usage{
-allcorrect(dat, pheno, classifier, lineid)
+allcorrect(dat, pheno, classifier, lineid, op = "trans")
 }
 \arguments{
 \item{dat}{is a dataframe in long format}
@@ -14,5 +14,7 @@ allcorrect(dat, pheno, classifier, lineid)
 \item{classifier}{is a character vector of classifying columns in the dataframe (exp, facility, etc)}
 
 \item{lineid}{the name of the column that contains Accessions (e.g. SALK lines or CS numbers)}
+
+\item{op}{which operation to perform. "trans" means translate by the comparison mean. anything else means scale by comparison mean}
 }
 

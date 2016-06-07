@@ -4,7 +4,7 @@
 \alias{colcorrect}
 \title{Correct phenotypes by the mean of col plants grown in each growth chamber in each Experiment}
 \usage{
-colcorrect(dat, pheno, classifier, lineid = "line")
+colcorrect(dat, pheno, classifier, lineid = "line", op = "trans")
 }
 \arguments{
 \item{dat}{is a dataframe in long format}
@@ -14,5 +14,7 @@ colcorrect(dat, pheno, classifier, lineid = "line")
 \item{classifier}{is a character vector of classifying columns in the dataframe (exp, facility, etc)}
 
 \item{lineid}{the name of the column that contains Accessions (e.g. SALK lines or CS numbers)}
+
+\item{op}{which operation to perform. "trans" means translate by the comparison mean. anything else means scale by comparison mean}
 }
 

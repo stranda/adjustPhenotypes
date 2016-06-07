@@ -4,16 +4,16 @@
 \alias{scalePhenos}
 \title{scale phenotypes by stddev for each  combination of experiment facility and variable}
 \usage{
-scalePhenos(phenolong)
+scalePhenos(dat, classifier, lineid = "accession")
 }
 \arguments{
 \item{dat}{is a dataframe in long format}
 
-\item{pheno}{is a character vector of phenotypes}
-
 \item{classifier}{is a character vector of classifying columns in the dataframe (exp, facility, etc)}
 
 \item{lineid}{the name of the column that contains Accessions (e.g. SALK lines or CS numbers)}
+
+\item{pheno}{is a character vector of phenotypes}
 
 \item{center}{passed to scale}
 
