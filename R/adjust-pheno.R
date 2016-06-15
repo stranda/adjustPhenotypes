@@ -14,7 +14,7 @@
 #' @param lineid the name of the column that contains Accessions (e.g. SALK lines or CS numbers)
 #' @param op which operation to perform. "trans" means translate by the comparison mean. anything else means scale by comparison mean
 #' @export
-colcorrect <- function(dat, pheno, classifier, lineid="line",op="trans") {
+colcorrect <- function(dat, pheno, classifier, lineid="accession",op="trans") {
 
     dat <- dat[dat$variable %in% pheno,]
     dat <- dat[!is.na(dat$value),] #don't mess with NAs
@@ -22,7 +22,7 @@ colcorrect <- function(dat, pheno, classifier, lineid="line",op="trans") {
     filter.cond <- paste0("grepl('60000|70000|Columbia',",lineid,")")
     select.cond <- paste0(c(classifier,"variable","value"))
     group.cond <-  paste0(c(classifier,"variable"))
- ### mean all phyts by classifiers
+
     phytmn <- filter_(dat,filter.cond)%>%
         select_(.dots=select.cond)%>%
         group_by_(.dots=group.cond) %>% summarise_each(funs(mean(.,na.rm=T)))
@@ -45,7 +45,7 @@ colcorrect <- function(dat, pheno, classifier, lineid="line",op="trans") {
     }
     
 #    adjdat <- adjdat %>% select_(.dots=select.cond)
-    adjdat
+    adjdat %>% select(-mean)
 }
 
 #' @name phytcorrect
