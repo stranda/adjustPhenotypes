@@ -11,7 +11,7 @@
 #' @export
 #'
 
-scalePhenos <- function(dat, pheno, classifier, lineid="accession") {
+scalePhenos <- function(dat, pheno=NULL, classifier, lineid="accession") {
 
     dat <- dat[!is.na(dat$value),] #don't mess with NAs
     if (!is.null(pheno)) dat <- dat[dat$variable%in%pheno,]
