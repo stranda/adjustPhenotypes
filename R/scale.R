@@ -11,9 +11,10 @@
 #' @export
 #'
 
-scalePhenos <- function(dat, classifier, lineid="accession") {
+scalePhenos <- function(dat, pheno, classifier, lineid="accession") {
 
     dat <- dat[!is.na(dat$value),] #don't mess with NAs
+    if (!is.null(pheno)) dat <- dat[dat$variable%in%pheno,]
 
     select.cond <- paste0(c(classifier,"variable","value"))
     group.cond <-  paste0(c(classifier,"variable"))
