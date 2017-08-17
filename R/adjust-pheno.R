@@ -14,18 +14,17 @@
 #' @param lineid the name of the column that contains Accessions (e.g. SALK lines or CS numbers)
 #' @param op which operation to perform. "trans" means translate by the comparison mean. anything else means scale by comparison mean
 #' @export
-colcorrect <- function(dat, pheno, classifier, lineid="accession",op="trans") {
-
-    dat <- dat[dat$variable %in% pheno,]
+colcorrect <- function(dat, classifier, pheno=NULL, lineid="accession",op="trans") {
+  if (!is.null(pheno)) dat <- dat[dat$variable%in%pheno,]
     dat <- dat[!is.na(dat$value),] #don't mess with NAs
     
-    filter.cond <- paste0("grepl('60000|70000|Columbia',",lineid,")")
+    filter.cond <- paste0("grepl('60000|70000|Columbia|COL',",lineid,")")
     select.cond <- paste0(c(classifier,"variable","value"))
     group.cond <-  paste0(c(classifier,"variable"))
 
     phytmn <- filter_(dat,filter.cond)%>%
         select_(.dots=select.cond)%>%
-        group_by_(.dots=group.cond) %>% summarise_each(funs(mean(.,na.rm=T)))
+        group_by_(.dots=group.cond) %>% summarise_all(funs(mean(.,na.rm=T)))
     names(phytmn)[names(phytmn)=="value"] <- "mean"
     if ("plantID" %in% names(phytmn)) {phytmn <- phytmn[,-grep("plantID",names(phytmn))]}
 
@@ -33,7 +32,7 @@ colcorrect <- function(dat, pheno, classifier, lineid="accession",op="trans") {
     select.cond <- paste0(c(classifier,lineid,"variable","value"))
 
     adjdat <- merge(dat,phytmn)
-    if (op=="trans") #translate by the comparison means
+    if ("trans"%in%op) #translate by the comparison means
     {
         adjdat$value <- ifelse(is.na(adjdat$mean),
                                adjdat$value,
@@ -56,27 +55,26 @@ colcorrect <- function(dat, pheno, classifier, lineid="accession",op="trans") {
 #' @param lineid the name of the column that contains Accessions (e.g. SALK lines or CS numbers)
 #' @param op which operation to perform. "trans" means translate by the comparison mean. anything else means scale by comparison mean
 #' @export
-phytcorrect <- function(dat, pheno, classifier, lineid="line",op="trans") {
-
-        dat <- dat[dat$variable %in% pheno,]
+phytcorrect <- function(dat, classifier, pheno=NULL, lineid="line",op="trans") {
+  if (!is.null(pheno)) dat <- dat[dat$variable%in%pheno,]
         dat <- dat[!is.na(dat$value),] #don't mess with NAs
         dat.old <- dat
     
-    filter.cond <- paste0("grepl('CS',",lineid,")")
-    filter.cond2 <- paste0("!grepl('60000|70000|Columbia',",lineid,")")
+    filter.cond <- paste0("grepl('CS|COL',",lineid,")")
+#    filter.cond2 <- paste0("!grepl('60000|70000|Columbia',",lineid,")")
         select.cond <- paste0(c(classifier,"variable","value"))
         group.cond <-  paste0(c(classifier,"variable"))
  ### mean all phyts by classifiers
-        phytmn <- filter_(dat,filter.cond)%>% filter_(.dots=filter.cond2)%>%
+        phytmn <- filter_(dat,filter.cond)%>% #filter_(.dots=filter.cond2)%>%
             select_(.dots=select.cond)%>%
-                group_by_(.dots=group.cond) %>% summarise_each(funs(mean(.,na.rm=T)))
+                group_by_(.dots=group.cond) %>% summarise_all(funs(mean(.,na.rm=T)))
         names(phytmn)[names(phytmn)=="value"] <- "mean"
         if ("plantID" %in% names(phytmn)) {phytmn <- phytmn[,-grep("plantID",names(phytmn))]}
        
 ### adj dat by phytometer means
         select.cond <- paste0(c(classifier,lineid,"variable","value"))
         adjdat <- left_join(dat,phytmn)
-    if (op=="trans") #translate by the comparison means
+    if ("trans"%in%op) #translate by the comparison means
     {
         adjdat$value <- ifelse(is.na(adjdat$mean),
                                adjdat$value,
@@ -101,17 +99,17 @@ phytcorrect <- function(dat, pheno, classifier, lineid="line",op="trans") {
 #' @param lineid the name of the column that contains Accessions (e.g. SALK lines or CS numbers)
 #' @param op which operation to perform. "trans" means translate by the comparison mean. anything else means scale by comparison mean
 #' @export
-allcorrect <- function(dat, pheno, classifier, lineid,op="trans") {
+allcorrect <- function(dat, classifier, pheno=NULL, lineid,op="trans") {
 
-        dat <- dat[dat$variable %in% pheno,]
-        dat <- dat[!is.na(dat$value),] #don't mess with NAs
+    if (!is.null(pheno)) dat <- dat[dat$variable%in%pheno,]
+    dat <- dat[!is.na(dat$value),] #don't mess with NAs
         
-        select.cond <- paste0(c(classifier,"variable","value"))
-        group.cond <-  paste0(c(classifier,"variable"))
+    select.cond <- paste0(c(classifier,"variable","value"))
+    group.cond <-  paste0(c(classifier,"variable"))
  ### mean all phyts by classifiers
         phytmn <- dat %>%
             select_(.dots=select.cond)%>%
-                group_by_(.dots=group.cond) %>% summarise_each(funs(mean(.,na.rm=F)))
+                group_by_(.dots=group.cond) %>% summarise_all(funs(mean(.,na.rm=F)))
         names(phytmn)[names(phytmn)=="value"] <- "mean"  
     if ("plantID" %in% names(phytmn)) {phytmn <- phytmn[,-grep("plantID",names(phytmn))]}
 
@@ -119,7 +117,7 @@ allcorrect <- function(dat, pheno, classifier, lineid,op="trans") {
 ### adj dat by phytometer means
         select.cond <- paste0(c(classifier,lineid,"variable","value"))
         adjdat <- left_join(dat,phytmn)
-    if (op=="trans") #translate by the comparison means
+    if ("trans"%in%op) #translate by the comparison means
     {
         adjdat$value <- ifelse(is.na(adjdat$mean),
                                adjdat$value,
