@@ -1,6 +1,6 @@
 #
 # functions to take a phenotype along with classifying information to create an adjusted phenotype
-#  either by the phytometers or by the means in each growth chamber/greenhouse of all plants
+#  either by the phytometers or by the means in each growth chamber/greenhouse of all s
 #
 ## the "dat" dataframes each function takes are in long, or melted format.
 
@@ -26,7 +26,7 @@ colcorrect <- function(dat, classifier, pheno=NULL, lineid="accession",op="trans
         select_(.dots=select.cond)%>%
         group_by_(.dots=group.cond) %>% summarise_all(funs(mean(.,na.rm=T)))
     names(phytmn)[names(phytmn)=="value"] <- "mean"
-    if ("plantID" %in% names(phytmn)) {phytmn <- phytmn[,-grep("plantID",names(phytmn))]}
+#    if ("plantID" %in% names(phytmn)) {phytmn <- phytmn[,-grep("plantID",names(phytmn))]}
 
    ### adj dat by phytometer means
     select.cond <- paste0(c(classifier,lineid,"variable","value"))
@@ -59,22 +59,13 @@ phytcorrect <- function(dat, classifier, pheno=NULL, lineid="line",op="trans") {
             select_(.dots=select.cond)%>%
                 group_by_(.dots=group.cond) %>% summarise_all(funs(mean(.,na.rm=T)))
         names(phytmn)[names(phytmn)=="value"] <- "mean"
-        if ("plantID" %in% names(phytmn)) {phytmn <- phytmn[,-grep("plantID",names(phytmn))]}
+#        if ("plantID" %in% names(phytmn)) {phytmn <- phytmn[,-grep("plantID",names(phytmn))]}
        
 ### adj dat by phytometer means
         select.cond <- paste0(c(classifier,lineid,"variable","value"))
         adjdat <- left_join(dat,phytmn)
-    if ("trans"%in%op) #translate by the comparison means
-    {
-        adjdat$value <- ifelse(is.na(adjdat$mean),
-                               adjdat$value,
-                               adjdat$value-adjdat$mean)
-    } else { #scale by the comparison means
-        adjdat$value <- ifelse(is.na(adjdat$mean),
-                               adjdat$value,
-                               adjdat$value/adjdat$mean)
-    }
-        adjdat <- adjdat %>% select_(.dots=c(select.cond,"meta.experiment"))
+        adjdat$value <- adjdat$value-adjdat$mean
+        adjdat <- adjdat %>% select_(.dots=c(select.cond,"meta.experiment","plantID"))
         adjdat
     }
 
@@ -101,23 +92,14 @@ allcorrect <- function(dat, classifier, pheno=NULL, lineid,op="trans") {
             select_(.dots=select.cond)%>%
                 group_by_(.dots=group.cond) %>% summarise_all(funs(mean(.,na.rm=F)))
         names(phytmn)[names(phytmn)=="value"] <- "mean"  
-    if ("plantID" %in% names(phytmn)) {phytmn <- phytmn[,-grep("plantID",names(phytmn))]}
+#    if ("plantID" %in% names(phytmn)) {phytmn <- phytmn[,-grep("plantID",names(phytmn))]}
 
     
 ### adj dat by phytometer means
         select.cond <- paste0(c(classifier,lineid,"variable","value"))
         adjdat <- left_join(dat,phytmn)
-    if ("trans"%in%op) #translate by the comparison means
-    {
-        adjdat$value <- ifelse(is.na(adjdat$mean),
-                               adjdat$value,
-                               adjdat$value-adjdat$mean)
-    } else { #scale by the comparison means
-        adjdat$value <- ifelse(is.na(adjdat$mean),
-                               adjdat$value,
-                               adjdat$value/adjdat$mean)
-    }
-        adjdat <- adjdat %>% select_(.dots=select.cond)
+        adjdat$value <- adjdat$value-adjdat$mean
+        adjdat <- adjdat %>% select_(.dots=c(select.cond,"plantID")
         adjdat
         
     }
