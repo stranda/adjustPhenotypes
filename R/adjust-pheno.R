@@ -17,7 +17,7 @@
 colcorrect <- function(dat, classifier, pheno=NULL, lineid="accession",op="trans") {
   if (!is.null(pheno)) dat <- dat[dat$variable%in%pheno,]
     dat <- dat[!is.na(dat$value),] #don't mess with NAs
-    
+  
     filter.cond <- paste0("grepl('60000|70000|Columbia|COL',",lineid,")")
     select.cond <- paste0(c(classifier,"variable","value"))
     group.cond <-  paste0(c(classifier,"variable"))
@@ -28,21 +28,11 @@ colcorrect <- function(dat, classifier, pheno=NULL, lineid="accession",op="trans
     names(phytmn)[names(phytmn)=="value"] <- "mean"
     if ("plantID" %in% names(phytmn)) {phytmn <- phytmn[,-grep("plantID",names(phytmn))]}
 
-### adj dat by phytometer means
+   ### adj dat by phytometer means
     select.cond <- paste0(c(classifier,lineid,"variable","value"))
 
     adjdat <- merge(dat,phytmn)
-    if ("trans"%in%op) #translate by the comparison means
-    {
-        adjdat$value <- ifelse(is.na(adjdat$mean),
-                               adjdat$value,
-                               adjdat$value-adjdat$mean)
-    } else { #scale by the comparison means
-        adjdat$value <- ifelse(is.na(adjdat$mean),
-                               adjdat$value,
-                               adjdat$value/adjdat$mean)
-    }
-    
+    adjdat$value <- adjdat$value-adjdat$mean
 #    adjdat <- adjdat %>% select_(.dots=select.cond)
     adjdat %>% select(-mean)
 }
