@@ -45,30 +45,28 @@ colcorrect <- function(dat, classifier, pheno=NULL, lineid="accession",op="trans
 #' @param lineid the name of the column that contains Accessions (e.g. SALK lines or CS numbers)
 #' @param op which operation to perform. "trans" means translate by the comparison mean. anything else means scale by comparison mean
 #' @export
-phytcorrect <- function(dat, classifier, pheno=NULL, lineid="line",op="trans") {
+phytcorrect <- function(dat, classifier, pheno=NULL, lineid="accession",op="trans") {
   if (!is.null(pheno)) dat <- dat[dat$variable%in%pheno,]
         dat <- dat[!is.na(dat$value),] #don't mess with NAs
-        dat.old <- dat
     
-    filter.cond <- paste0("grepl('CS|COL',",lineid,")")
-#    filter.cond2 <- paste0("!grepl('60000|70000|Columbia',",lineid,")")
-        select.cond <- paste0(c(classifier,"variable","value"))
-        group.cond <-  paste0(c(classifier,"variable"))
+  filter.cond <- paste0("grepl('CS|COL',",lineid,")")
+  select.cond <- paste0(c(classifier,"variable","value"))
+  group.cond <-  paste0(c(classifier,"variable"))
  ### mean all phyts by classifiers
-        phytmn <- filter_(dat,filter.cond)%>% #filter_(.dots=filter.cond2)%>%
-            select_(.dots=select.cond)%>%
-                group_by_(.dots=group.cond) %>% summarise_all(funs(mean(.,na.rm=T)))
-        names(phytmn)[names(phytmn)=="value"] <- "mean"
+  phytmn <- filter_(dat,filter.cond)%>% #filter_(.dots=filter.cond2)%>%
+      select_(.dots=select.cond)%>%
+      group_by_(.dots=group.cond) %>% summarise_all(funs(mean(.,na.rm=T)))
+  names(phytmn)[names(phytmn)=="value"] <- "mean"
 #        if ("plantID" %in% names(phytmn)) {phytmn <- phytmn[,-grep("plantID",names(phytmn))]}
        
 ### adj dat by phytometer means
-        select.cond <- paste0(c(classifier,lineid,"variable","value"))
-        adjdat <- left_join(dat,phytmn)
-        adjdat$value <- adjdat$value-adjdat$mean
+  select.cond <- paste0(c(classifier,lineid,"variable","value"))
+  adjdat <- merge(dat,phytmn)
+  adjdat$value <- adjdat$value-adjdat$mean
 #        adjdat <- adjdat %>% select_(.dots=c(select.cond,"meta.experiment","plantID"))
 ###        adjdat
-      adjdat %>% select(-mean)
-    }
+  adjdat %>% select(-mean)
+}
 
 #this one adjusts the phenotype by the means of all plants in each
 #growth chamber
@@ -98,7 +96,7 @@ allcorrect <- function(dat, classifier, pheno=NULL, lineid,op="trans") {
     
 ### adj dat by phytometer means
         select.cond <- paste0(c(classifier,lineid,"variable","value"))
-        adjdat <- left_join(dat,phytmn)
+        adjdat <- merge(dat,phytmn)
         adjdat$value <- adjdat$value-adjdat$mean
 ###        adjdat <- adjdat %>% select_(.dots=c(select.cond,"plantID"))
 ###        adjdat
