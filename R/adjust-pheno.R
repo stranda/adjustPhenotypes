@@ -65,8 +65,9 @@ phytcorrect <- function(dat, classifier, pheno=NULL, lineid="line",op="trans") {
         select.cond <- paste0(c(classifier,lineid,"variable","value"))
         adjdat <- left_join(dat,phytmn)
         adjdat$value <- adjdat$value-adjdat$mean
-        adjdat <- adjdat %>% select_(.dots=c(select.cond,"meta.experiment","plantID"))
-        adjdat
+#        adjdat <- adjdat %>% select_(.dots=c(select.cond,"meta.experiment","plantID"))
+###        adjdat
+      adjdat %>% select(-mean)
     }
 
 #this one adjusts the phenotype by the means of all plants in each
@@ -99,7 +100,7 @@ allcorrect <- function(dat, classifier, pheno=NULL, lineid,op="trans") {
         select.cond <- paste0(c(classifier,lineid,"variable","value"))
         adjdat <- left_join(dat,phytmn)
         adjdat$value <- adjdat$value-adjdat$mean
-        adjdat <- adjdat %>% select_(.dots=c(select.cond,"plantID")
-        adjdat
-        
+###        adjdat <- adjdat %>% select_(.dots=c(select.cond,"plantID"))
+###        adjdat
+      adjdat %>% select(-mean)      
     }
