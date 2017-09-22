@@ -18,7 +18,7 @@ colcorrect <- function(dat, classifier, pheno=NULL, lineid="accession",op="trans
   if (!is.null(pheno)) dat <- dat[dat$variable%in%pheno,]
     dat <- dat[!is.na(dat$value),] #don't mess with NAs
   
-    filter.cond <- paste0("grepl('60000|70000|Columbia|COL',",lineid,")")
+    filter.cond <- paste0("grepl('60000|70000|Columbia|COL|ancestor',",lineid,")")
     select.cond <- paste0(c(classifier,"variable","value"))
     group.cond <-  paste0(c(classifier,"variable"))
 
@@ -49,7 +49,7 @@ phytcorrect <- function(dat, classifier, pheno=NULL, lineid="accession",op="tran
   if (!is.null(pheno)) dat <- dat[dat$variable%in%pheno,]
         dat <- dat[!is.na(dat$value),] #don't mess with NAs
     
-  filter.cond <- paste0("grepl('CS|COL',",lineid,")")
+  filter.cond <- paste0("grepl('CS|COL|ancestor',",lineid,")")
   select.cond <- paste0(c(classifier,"variable","value"))
   group.cond <-  paste0(c(classifier,"variable"))
  ### mean all phyts by classifiers
