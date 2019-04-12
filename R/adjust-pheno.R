@@ -34,7 +34,7 @@ colcorrect <- function(dat, classifier, pheno=NULL, lineid="accession",op="trans
     adjdat <- merge(dat,phytmn)
     adjdat$value <- adjdat$value-adjdat$mean
 #    adjdat <- adjdat %>% select_(.dots=select.cond)
-    adjdat %>% select(-mean)
+    adjdat[,-which(names(adjdat)=="mean")]
 }
 
 #' @name phytcorrect
@@ -65,7 +65,8 @@ phytcorrect <- function(dat, classifier, pheno=NULL, lineid="accession",op="tran
   adjdat$value <- adjdat$value-adjdat$mean
 #        adjdat <- adjdat %>% select_(.dots=c(select.cond,"meta.experiment","plantID"))
 ###        adjdat
-  adjdat %>% select(-mean)
+
+  adjdat[,-which(names(adjdat)=="mean")]
 }
 
 #this one adjusts the phenotype by the means of all plants in each
@@ -100,5 +101,5 @@ allcorrect <- function(dat, classifier, pheno=NULL, lineid,op="trans") {
         adjdat$value <- adjdat$value-adjdat$mean
 ###        adjdat <- adjdat %>% select_(.dots=c(select.cond,"plantID"))
 ###        adjdat
-      adjdat %>% select(-mean)      
+    adjdat[,-which(names(adjdat)=="mean")]
     }
