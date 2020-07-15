@@ -20,11 +20,11 @@ scalePhenos <- function(dat, pheno=NULL, classifier, lineid="accession") {
     group.cond <-  paste0(c(classifier,"variable"))
 
     #get summary stats by classifiers+variable
-    ExpFacStats = dat%>%group_by_(.dots=group.cond)%>%
-        summarise(std=sd(value),mean=mean(value))
+    ExpFacStats = dat%>% dplyr::group_by_(.dots=group.cond)%>%
+        dplyr::summarise(std=sd(value),mean=mean(value))
 
     dat <- merge(dat,ExpFacStats)
     dat$value=dat$value/dat$std
-    dat%>%select(-std,-mean)
+    dat%>%dplyr::select(-std,-mean)
     
 }
