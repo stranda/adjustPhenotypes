@@ -17,14 +17,17 @@
 colcorrect <- function(dat, classifier, pheno=NULL, lineid="accession",op="trans") {
   if (!is.null(pheno)) dat <- dat[dat$variable%in%pheno,]
     dat <- dat[!is.na(dat$value),] #don't mess with NAs
+
+    filter.cond <- paste0("grepl('60000|70000|Columbia|COL|ancestor',dat[,'",lineid,"'])")
   
-    filter.cond <- paste0("grepl('60000|70000|Columbia|COL|ancestor',",lineid,")")
+  dat$coll = eval(parse(text=filter.cond))
+  
     select.cond <- paste0(c(classifier,"variable","value"))
     group.cond <-  paste0(c(classifier,"variable"))
 
-    phytmn <- filter_(dat,filter.cond)%>%
-        select_(.dots=select.cond)%>%
-        group_by_(.dots=group.cond) %>% summarise_all(funs(mean(.,na.rm=T)))
+    phytmn <- filter(dat,coll==TRUE)%>%
+        select(any_of(select.cond))%>%
+        group_by_at(group.cond) %>% summarise_all(funs(mean(.,na.rm=T)))
     names(phytmn)[names(phytmn)=="value"] <- "mean"
 #    if ("plantID" %in% names(phytmn)) {phytmn <- phytmn[,-grep("plantID",names(phytmn))]}
 
@@ -48,14 +51,18 @@ colcorrect <- function(dat, classifier, pheno=NULL, lineid="accession",op="trans
 phytcorrect <- function(dat, classifier, pheno=NULL, lineid="accession",op="trans") {
   if (!is.null(pheno)) dat <- dat[dat$variable%in%pheno,]
         dat <- dat[!is.na(dat$value),] #don't mess with NAs
-    
-  filter.cond <- paste0("grepl('CS|COL|ancestor',",lineid,")")
+
+  filter.cond <- paste0("grepl('CS|COL|ancestor',dat[,'",lineid,"'])")
+  
+  dat$phytl = eval(parse(text=filter.cond))
+
   select.cond <- paste0(c(classifier,"variable","value"))
   group.cond <-  paste0(c(classifier,"variable"))
  ### mean all phyts by classifiers
-  phytmn <- filter_(dat,filter.cond)%>% #filter_(.dots=filter.cond2)%>%
-      select_(.dots=select.cond)%>%
-      group_by_(.dots=group.cond) %>% summarise_all(funs(mean(.,na.rm=T)))
+  phytmn <- filter(dat,phytl==TRUE)%>% #filter_(.dots=filter.cond2)%>%
+        select(any_of(select.cond))%>%
+      group_by_at( group.cond ) %>%
+      summarise_all(list(~ mean(.,na.rm=T)))
   names(phytmn)[names(phytmn)=="value"] <- "mean"
 #        if ("plantID" %in% names(phytmn)) {phytmn <- phytmn[,-grep("plantID",names(phytmn))]}
        
@@ -89,8 +96,9 @@ allcorrect <- function(dat, classifier, pheno=NULL, lineid,op="trans") {
     group.cond <-  paste0(c(classifier,"variable"))
  ### mean all phyts by classifiers
         phytmn <- dat %>%
-            select_(.dots=select.cond)%>%
-                group_by_(.dots=group.cond) %>% summarise_all(funs(mean(.,na.rm=F)))
+            select(any_of(select.cond))%>%
+            group_by_at( group.cond ) %>%
+            summarise_all(funs(mean(.,na.rm=F)))
         names(phytmn)[names(phytmn)=="value"] <- "mean"  
 #    if ("plantID" %in% names(phytmn)) {phytmn <- phytmn[,-grep("plantID",names(phytmn))]}
 
